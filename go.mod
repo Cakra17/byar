@@ -3,6 +3,7 @@ module github.com/cakra17byar
 go 1.25.1
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/midtrans/midtrans-go v1.3.8
 	github.com/spf13/viper v1.21.0
 )
