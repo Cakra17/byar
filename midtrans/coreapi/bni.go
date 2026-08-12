@@ -6,8 +6,8 @@ import (
 	"github.com/midtrans/midtrans-go/coreapi"
 )
 
-func NewBriVa(req *md.Request) *coreapi.ChargeReq {
+func NewBniVa(req *md.Request) *coreapi.ChargeReq {
 	return newRequest(req).
-	SetBankPayment(coreapi.PaymentTypeBankTransfer, midtrans.BankBri).
-	build()
+		SetBankPayment(coreapi.PaymentTypeBankTransfer, midtrans.BankBni).
+		build()
 }

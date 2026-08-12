@@ -19,8 +19,9 @@ const (
 )
 
 type Request struct {
-	PaymentType        Payment
-	Bankname           Bank
+	// PaymentType        Payment
+	// Bankname           Bank
+	CreditCardToken    string
 	TransactionDetails TransactionDetails
 	ItemsDetails       []ItemsDetails
 	CustomerDetails    *CustomerDetails
