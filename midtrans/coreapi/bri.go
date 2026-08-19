@@ -1,13 +1,12 @@
 package coreapi
 
 import (
-	md "github.com/cakra17/byar/midtrans"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
 )
 
-func NewBriVa(req *md.Request) *coreapi.ChargeReq {
+func NewBriVa(req *Request) *coreapi.ChargeReq {
 	return newRequest(req).
-	SetBankPayment(coreapi.PaymentTypeBankTransfer, midtrans.BankBri).
-	build()
+		SetBankPayment(midtrans.BankBri).
+		build()
 }

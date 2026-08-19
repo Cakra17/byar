@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBriVa(t *testing.T) {
+func TestCC(t *testing.T) {
 
 	tests := []struct {
 		name  string
@@ -17,21 +17,22 @@ func TestBriVa(t *testing.T) {
 		err   error
 	}{
 		{
-			name: "Create new BRI VA",
+			name: "Create new Credit Card",
 			input: &Request{
 				TransactionDetails: TransactionDetails{
-					Orderid: "bri-123",
+					Orderid:     "cc-123",
 					GrossAmount: 100000,
 				},
+				CreditCardToken: "cc-lksdawjdlkdwa",
 			},
 			out: &coreapi.ChargeReq{
-				PaymentType: coreapi.PaymentTypeBankTransfer,
+				PaymentType: coreapi.PaymentTypeCreditCard,
 				TransactionDetails: midtrans.TransactionDetails{
-					OrderID: "bri-123",
+					OrderID:  "cc-123",
 					GrossAmt: 100000,
 				},
-				BankTransfer: &coreapi.BankTransferDetails{
-					Bank: midtrans.BankBri,
+				CreditCard: &coreapi.CreditCardDetails{
+					TokenID: "cc-lksdawjdlkdwa",
 				},
 			},
 		},
@@ -39,9 +40,9 @@ func TestBriVa(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			va := NewBriVa(test.input)
+			va := NewCreditCard(test.input)
 			assert.Equal(t, va.PaymentType, test.out.PaymentType)
-			assert.Equal(t, va.BankTransfer.Bank, test.out.BankTransfer.Bank)
+			assert.Equal(t, va.CreditCard.TokenID, test.out.CreditCard.TokenID)
 			assert.Equal(t, va.TransactionDetails.OrderID, test.out.TransactionDetails.OrderID)
 			assert.Equal(t, va.TransactionDetails.GrossAmt, test.out.TransactionDetails.GrossAmt)
 		})

@@ -3,7 +3,6 @@ package coreapi
 import (
 	"testing"
 
-	md "github.com/cakra17/byar/midtrans"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
 	"github.com/stretchr/testify/assert"
@@ -12,14 +11,14 @@ import (
 func TestBcaVa(t *testing.T) {
 	tests := []struct {
 		name  string
-		input *md.Request
+		input *Request
 		out   *coreapi.ChargeReq
 		err   error
 	}{
 		{
 			name: "Create new BCA VA",
-			input: &md.Request{
-				TransactionDetails: md.TransactionDetails{
+			input: &Request{
+				TransactionDetails: TransactionDetails{
 					Orderid: "bca-123",
 					GrossAmount: 100000,
 				},

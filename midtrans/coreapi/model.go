@@ -1,25 +1,13 @@
-package midtrans
+package coreapi
 
-import "time"
+import (
+	"time"
 
-type Bank string
-type Payment string
-
-const (
-	BANKBCA  Bank = "bca"
-	BANKBNI  Bank = "bni"
-	BANKBRI  Bank = "bri"
-	BANKCIMB Bank = "cimb"
-)
-
-const (
-	BANK_TRANSFER Payment = "bank_transfer"
-	CREDIT_CARD   Payment = "credit_card"
-	QRIS          Payment = "qris"
+	"github.com/cakra17/byar"
 )
 
 type Request struct {
-	// PaymentType        Payment
+	PaymentType byar.PaymentType
 	// Bankname           Bank
 	CreditCardToken    string
 	TransactionDetails TransactionDetails
@@ -27,6 +15,7 @@ type Request struct {
 	CustomerDetails    *CustomerDetails
 	SellerDetails      *SellerDetails
 	CustomExpiry       *CustomExpiry
+	Callback           string
 }
 
 type TransactionDetails struct {

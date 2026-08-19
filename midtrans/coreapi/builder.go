@@ -2,7 +2,6 @@ package coreapi
 
 import (
 	"github.com/midtrans/midtrans-go"
-	md "github.com/cakra17/byar/midtrans"
 	cr "github.com/midtrans/midtrans-go/coreapi"
 )
 
@@ -10,10 +9,10 @@ type builder struct {
 	req *cr.ChargeReq
 }
 
-func newRequest(req *md.Request) *builder {
+func newRequest(req *Request) *builder {
 	build := &builder{
 		req: &cr.ChargeReq{
-			Items:       &[]midtrans.ItemDetails{},
+			Items: &[]midtrans.ItemDetails{},
 		},
 	}
 
@@ -24,8 +23,8 @@ func newRequest(req *md.Request) *builder {
 		setExpiry(req)
 }
 
-func (b *builder) setItem(req *md.Request) *builder {
-	if (len(req.ItemsDetails) > 0) {	
+func (b *builder) setItem(req *Request) *builder {
+	if len(req.ItemsDetails) > 0 {
 		var items []midtrans.ItemDetails
 		for _, item := range req.ItemsDetails {
 			items = append(items, midtrans.ItemDetails{
@@ -43,25 +42,44 @@ func (b *builder) setItem(req *md.Request) *builder {
 	return b
 }
 
-func (b *builder) setTransaction(req *md.Request) *builder {
+func (b *builder) setTransaction(req *Request) *builder {
 	b.req.TransactionDetails = midtrans.TransactionDetails{
-		OrderID: req.TransactionDetails.Orderid,
+		OrderID:  req.TransactionDetails.Orderid,
 		GrossAmt: req.TransactionDetails.GrossAmount,
-	}	
+	}
 
 	return b
 }
 
-func (b *builder) SetBankPayment(typ cr.CoreapiPaymentType, bank midtrans.Bank) *builder {
+func (b *builder) SetBankPayment(bank midtrans.Bank) *builder {
 	b.req.BankTransfer = &cr.BankTransferDetails{
 		Bank: bank,
 	}
-	b.req.PaymentType = typ
+	b.req.PaymentType = cr.PaymentTypeBankTransfer
 
 	return b
 }
 
-func (b *builder) setCustomer(req *md.Request) *builder {
+func (b *builder) SetCCPayment(token string) *builder {
+	b.req.CreditCard = &cr.CreditCardDetails{
+		TokenID: token,
+	}
+	b.req.PaymentType = cr.PaymentTypeCreditCard
+
+	return b
+}
+
+func (b *builder) SetGopayPayment(callbackUrl string) *builder {
+	b.req.Gopay = &cr.GopayDetails{
+		EnableCallback: true,
+		CallbackUrl:    callbackUrl,
+	}
+	b.req.PaymentType = cr.PaymentTypeGopay
+
+	return b
+}
+
+func (b *builder) setCustomer(req *Request) *builder {
 	if req.CustomerDetails != nil {
 		b.req.CustomerDetails = &midtrans.CustomerDetails{
 			FName: req.CustomerDetails.FirstName,
@@ -73,12 +91,12 @@ func (b *builder) setCustomer(req *md.Request) *builder {
 	return b
 }
 
-func (b *builder) setExpiry(req *md.Request) *builder {
+func (b *builder) setExpiry(req *Request) *builder {
 	if req.CustomExpiry != nil {
 		b.req.CustomExpiry = &cr.CustomExpiry{
-			OrderTime: req.CustomExpiry.OrderTime.String(),
+			OrderTime:      req.CustomExpiry.OrderTime.String(),
 			ExpiryDuration: req.CustomExpiry.ExpiryDuration,
-			Unit: req.CustomExpiry.Unit,
+			Unit:           req.CustomExpiry.Unit,
 		}
 	}
 	return b

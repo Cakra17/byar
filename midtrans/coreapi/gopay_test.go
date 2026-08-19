@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBriVa(t *testing.T) {
+func TestGopay(t *testing.T) {
 
 	tests := []struct {
 		name  string
@@ -17,21 +17,23 @@ func TestBriVa(t *testing.T) {
 		err   error
 	}{
 		{
-			name: "Create new BRI VA",
+			name: "Create new Gopay",
 			input: &Request{
 				TransactionDetails: TransactionDetails{
-					Orderid: "bri-123",
+					Orderid:     "gopay-123",
 					GrossAmount: 100000,
 				},
+				Callback: "someapps://callback",
 			},
 			out: &coreapi.ChargeReq{
-				PaymentType: coreapi.PaymentTypeBankTransfer,
+				PaymentType: coreapi.PaymentTypeGopay,
 				TransactionDetails: midtrans.TransactionDetails{
-					OrderID: "bri-123",
+					OrderID:  "gopay-123",
 					GrossAmt: 100000,
 				},
-				BankTransfer: &coreapi.BankTransferDetails{
-					Bank: midtrans.BankBri,
+				Gopay: &coreapi.GopayDetails{
+					EnableCallback: true,
+					CallbackUrl:    "someapps://callback",
 				},
 			},
 		},
@@ -39,9 +41,10 @@ func TestBriVa(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			va := NewBriVa(test.input)
+			va := NewGopay(test.input)
 			assert.Equal(t, va.PaymentType, test.out.PaymentType)
-			assert.Equal(t, va.BankTransfer.Bank, test.out.BankTransfer.Bank)
+			assert.Equal(t, va.Gopay.EnableCallback, test.out.Gopay.EnableCallback)
+			assert.Equal(t, va.Gopay.CallbackUrl, test.out.Gopay.CallbackUrl)
 			assert.Equal(t, va.TransactionDetails.OrderID, test.out.TransactionDetails.OrderID)
 			assert.Equal(t, va.TransactionDetails.GrossAmt, test.out.TransactionDetails.GrossAmt)
 		})
