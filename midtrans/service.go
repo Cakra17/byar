@@ -3,28 +3,34 @@ package midtrans
 import (
 	"os"
 
+	"github.com/cakra17/byar"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
 )
-
-type Config struct {
-	client_key string
-	server_key string
-}
 
 type Service struct {
 	client *coreapi.Client
 }
 
-func NewService(cfg Config) *Service {
-	var c *coreapi.Client
-
-	switch os.Getenv("ENVIRONMENT") {
-	case "production":
-		c.New(cfg.server_key, midtrans.Production)
-	default:
-		c.New(cfg.server_key, midtrans.Sandbox)
+func NewService(cfg byar.Config) *Service {
+	env := midtrans.Sandbox
+	if os.Getenv("ENVIRONMENT") == "production" {
+		env = midtrans.Production
 	}
 
-	return &Service{ client: c }
+	var c coreapi.Client
+	c.New(cfg.ServerKey, env)
+
+	return &Service{client: &c}
+}
+
+func (s Service) SupportMethods() []byar.PaymentType {
+	return []byar.PaymentType{
+		byar.BcaVa,
+		byar.BniVa,
+		byar.BriVa,
+		byar.CimbVa,
+		byar.CC,
+		byar.GOPAY,
+	}
 }
