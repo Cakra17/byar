@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 )
 
 type Gateway interface {
@@ -15,19 +16,50 @@ type CapabilityProvider interface {
 	SupportMethods() []PaymentType
 }
 
+type Option func(*GatewayRegistry)
+
+// WithBreakerThreshold sets how many consecutive transient failures open a
+// gateway's circuit breaker (default 5). Values < 1 are ignored.
+func WithBreakerThreshold(n int) Option {
+	return func(r *GatewayRegistry) {
+		if n > 0 {
+			r.breakerThreshold = n
+		}
+	}
+}
+
+// WithBreakerCooldown sets how long an open circuit breaker waits before
+// allowing a half-open probe (default 30s). Non-positive values are ignored.
+func WithBreakerCooldown(d time.Duration) Option {
+	return func(r *GatewayRegistry) {
+		if d > 0 {
+			r.breakerCooldown = d
+		}
+	}
+}
+
 type GatewayRegistry struct {
 	mu       sync.RWMutex
 	gateways map[string]Gateway
 	caps     map[string]map[PaymentType]struct{}
 	matrix   map[PaymentType][]string
+
+	breakerThreshold int
+	breakerCooldown  time.Duration
 }
 
-func NewGateway() *GatewayRegistry {
-	return &GatewayRegistry{
-		gateways: make(map[string]Gateway),
-		caps:     make(map[string]map[PaymentType]struct{}),
-		matrix:   make(map[PaymentType][]string),
+func NewGateway(opts ...Option) *GatewayRegistry {
+	r := &GatewayRegistry{
+		gateways:         make(map[string]Gateway),
+		caps:             make(map[string]map[PaymentType]struct{}),
+		matrix:           make(map[PaymentType][]string),
+		breakerThreshold: defaultBreakerThreshold,
+		breakerCooldown:  defaultBreakerCooldown,
 	}
+	for _, opt := range opts {
+		opt(r)
+	}
+	return r
 }
 
 func (r *GatewayRegistry) Get(provider string) (Gateway, error) {
@@ -64,7 +96,10 @@ func (r *GatewayRegistry) Register(key string, gw Gateway, methods ...PaymentTyp
 		r.matrix[pt] = append(r.matrix[pt], key)
 	}
 
-	r.gateways[key] = gw
+	r.gateways[key] = &breakerGateway{
+		Gateway: gw,
+		b:       newBreaker(r.breakerThreshold, r.breakerCooldown),
+	}
 	r.caps[key] = caps
 	return nil
 }

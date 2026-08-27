@@ -19,7 +19,6 @@ const (
 )
 
 type Request struct {
-	Provider           string
 	PaymentType        PaymentType
 	CreditCardToken    string
 	TransactionDetails TransactionDetails
@@ -66,12 +65,24 @@ type CustomExpiry struct {
 	Unit           string // seconds, minutes, hours
 }
 
+type TransactionStatus string
+
+const (
+	StatusPending    TransactionStatus = "pending"
+	StatusSettlement TransactionStatus = "settlement"
+	StatusCapture    TransactionStatus = "capture"
+	StatusDeny       TransactionStatus = "deny"
+	StatusExpire     TransactionStatus = "expire"
+	StatusCancel     TransactionStatus = "cancel"
+)
+
 type Transaction struct {
+	Provider   string
 	Id         string
 	OrderId    string
 	VaNumber   string
 	PaymentUrl string
-	Status     string
+	Status     TransactionStatus
 	Expiry     time.Time
 	Service    string
 }
