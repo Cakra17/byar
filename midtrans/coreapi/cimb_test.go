@@ -3,6 +3,7 @@ package coreapi
 import (
 	"testing"
 
+	"github.com/cakra17/byar"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
 	"github.com/stretchr/testify/assert"
@@ -12,14 +13,14 @@ func TestCimbVa(t *testing.T) {
 
 	tests := []struct {
 		name  string
-		input *Request
+		input *byar.Request
 		out   *coreapi.ChargeReq
 		err   error
 	}{
 		{
 			name: "Create new Cimb VA",
-			input: &Request{
-				TransactionDetails: TransactionDetails{
+			input: &byar.Request{
+				TransactionDetails: byar.TransactionDetails{
 					Orderid: "cimb-123",
 					GrossAmount: 100000,
 				},

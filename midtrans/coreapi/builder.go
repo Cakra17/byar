@@ -1,6 +1,7 @@
 package coreapi
 
 import (
+	"github.com/cakra17/byar"
 	"github.com/midtrans/midtrans-go"
 	cr "github.com/midtrans/midtrans-go/coreapi"
 )
@@ -9,7 +10,7 @@ type builder struct {
 	req *cr.ChargeReq
 }
 
-func newRequest(req *Request) *builder {
+func newRequest(req *byar.Request) *builder {
 	build := &builder{
 		req: &cr.ChargeReq{
 			Items: &[]midtrans.ItemDetails{},
@@ -23,7 +24,7 @@ func newRequest(req *Request) *builder {
 		setExpiry(req)
 }
 
-func (b *builder) setItem(req *Request) *builder {
+func (b *builder) setItem(req *byar.Request) *builder {
 	if len(req.ItemsDetails) > 0 {
 		var items []midtrans.ItemDetails
 		for _, item := range req.ItemsDetails {
@@ -42,7 +43,7 @@ func (b *builder) setItem(req *Request) *builder {
 	return b
 }
 
-func (b *builder) setTransaction(req *Request) *builder {
+func (b *builder) setTransaction(req *byar.Request) *builder {
 	b.req.TransactionDetails = midtrans.TransactionDetails{
 		OrderID:  req.TransactionDetails.Orderid,
 		GrossAmt: req.TransactionDetails.GrossAmount,
@@ -79,7 +80,7 @@ func (b *builder) SetGopayPayment(callbackUrl string) *builder {
 	return b
 }
 
-func (b *builder) setCustomer(req *Request) *builder {
+func (b *builder) setCustomer(req *byar.Request) *builder {
 	if req.CustomerDetails != nil {
 		b.req.CustomerDetails = &midtrans.CustomerDetails{
 			FName: req.CustomerDetails.FirstName,
@@ -91,7 +92,7 @@ func (b *builder) setCustomer(req *Request) *builder {
 	return b
 }
 
-func (b *builder) setExpiry(req *Request) *builder {
+func (b *builder) setExpiry(req *byar.Request) *builder {
 	if req.CustomExpiry != nil {
 		b.req.CustomExpiry = &cr.CustomExpiry{
 			OrderTime:      req.CustomExpiry.OrderTime.String(),

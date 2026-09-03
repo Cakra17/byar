@@ -1,11 +1,12 @@
 package coreapi
 
 import (
+	"github.com/cakra17/byar"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
 )
 
-func NewCimbVa(req *Request) *coreapi.ChargeReq {
+func NewCimbVa(req *byar.Request) *coreapi.ChargeReq {
 	return newRequest(req).
 		SetBankPayment(midtrans.BankCimb).
 		build()
