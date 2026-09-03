@@ -3,8 +3,8 @@ package byar
 import "time"
 
 type Config struct {
-	ClientKey string
-	ServerKey string
+	ClientKey string `mapstructure:"client_key"`
+	ServerKey string `mapstructure:"server_key"`
 }
 
 type PaymentType string
@@ -84,5 +84,8 @@ type Transaction struct {
 	PaymentUrl string
 	Status     TransactionStatus
 	Expiry     time.Time
-	Service    string
+	Time       string
+	Amount     string
+	Message    string
+	Currency   string
 }
